@@ -6,7 +6,7 @@ license = "MIT"
 version = "0.0.1"
 edition = "2024"
 readme = "README.md"
-repository = "https://github.com/zocketZero/btc-wallet"
+repository = "https://github.com/ZocketZero/btc-wallet-rust"
 categories = ["command-line-utilities"]
 keywords = ["bitcoin", "wallet", "crypto", "cli"]
 
