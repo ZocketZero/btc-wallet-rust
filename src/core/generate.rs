@@ -1,0 +1,16 @@
+use secp256k1::{PublicKey, Secp256k1, SecretKey};
+use sha2::{Digest, Sha256};
+
+pub fn generate_keypair_from_text(text: &str) -> (SecretKey, PublicKey) {
+    let mut hasher = Sha256::new();
+    hasher.update(text.as_bytes());
+    let secret_key_bytes: [u8; 32] = hasher.finalize().into();
+
+    let secp = Secp256k1::new();
+    // Use the SHA-256 hash of the text directly as the private key
+    // This is a more common standard for simple "brain wallets"
+    let secret_key =
+        SecretKey::from_slice(&secret_key_bytes).expect("32 bytes, within curve order");
+    let pub_key = PublicKey::from_secret_key(&secp, &secret_key);
+    (secret_key, pub_key)
+}

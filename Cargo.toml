@@ -1,0 +1,21 @@
+[package]
+name = "btc-wallet"
+description = "command line software to generate bitcoin wallet"
+authors = ["ZocketZero <zocketzero@proton.me>"]
+license = "MIT"
+version = "0.0.1"
+edition = "2024"
+readme = "README.md"
+repository = "https://github.com/zocketZero/btc-wallet"
+categories = ["command-line-utilities"]
+keywords = ["bitcoin", "wallet", "crypto", "cli"]
+
+include = ["src/*", "LICENSE", "README.md"]
+
+[dependencies]
+bitcoin = { version = "0.31", features = ["std"] }          # Use the latest version
+secp256k1 = { version = "0.28.2", features = ["rand-std"] }
+tokio = { version = "1", features = ["full"] }
+sha2 = "0.10.9"
+clap = { version = "4.5.56", features = ["derive"] }
+clap_complete = "4.5.65"
