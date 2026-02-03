@@ -1,6 +1,10 @@
 use bitcoin::{Address, Network};
+use secp256k1::{PublicKey, SecretKey};
 
-use crate::{core::generate::generate_keypair_from_text, utils::PrintMode};
+use crate::{
+    core::generate::{generate_keypair_from_hash, generate_keypair_from_text},
+    utils::PrintMode,
+};
 
 pub struct Wallet {
     private_key_wif: String,
@@ -9,9 +13,7 @@ pub struct Wallet {
 }
 
 impl Wallet {
-    pub fn new(text: &str, compressed: bool) -> Self {
-        let (secret_key, pub_key_secp) = generate_keypair_from_text(text);
-
+    pub fn gen_wallet(secret_key: SecretKey, pub_key_secp: PublicKey, compressed: bool) -> Self {
         // Construct bitcoin::PrivateKey with specified compressed state
         let private_key = bitcoin::PrivateKey {
             compressed,
@@ -35,6 +37,16 @@ impl Wallet {
             public_key_str,
             address,
         }
+    }
+
+    pub fn from_hash(hash: &[u8; 32], compressed: bool) -> Self {
+        let (secret_key, pub_key_secp) = generate_keypair_from_hash(hash);
+        Self::gen_wallet(secret_key, pub_key_secp, compressed)
+    }
+
+    pub fn new(text: &str, compressed: bool) -> Self {
+        let (secret_key, pub_key_secp) = generate_keypair_from_text(text);
+        Self::gen_wallet(secret_key, pub_key_secp, compressed)
     }
 
     pub fn print(&self, mode: PrintMode, raw: bool) {

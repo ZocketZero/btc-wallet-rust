@@ -1,6 +1,10 @@
-use crate::utils::PrintMode;
-use clap::CommandFactory;
-use clap::Parser;
+use crate::{
+    core::Wallet,
+    utils::{PrintMode, hash_from_file, read_hash},
+};
+use clap::{CommandFactory, Parser};
+use clap_complete::generate;
+use std::{io, path::Path};
 
 /// Generate a Bitcoin wallet from a text seed.
 #[derive(Parser, Debug)]
@@ -8,6 +12,14 @@ use clap::Parser;
 pub struct Args {
     /// Text to use as a seed for the wallet generation
     pub seed_text: Option<String>,
+
+    /// use file as seed
+    #[arg(short, long, value_name = "File")]
+    pub file: Option<String>,
+
+    /// generate bitcoin from sha256 hash.
+    #[arg(long, value_name = "Sha256")]
+    pub hash: Option<String>,
 
     /// Print only specific value.
     #[arg(short, long, default_value = "all")]
@@ -29,10 +41,6 @@ pub struct Args {
 impl Args {
     pub fn run(&self) {
         if let Some(shell) = self.completion {
-            use std::io;
-
-            use clap_complete::generate;
-
             let mut args = Args::command();
             let bin_name = std::env::current_exe();
             if let Ok(bin_name) = bin_name
@@ -45,6 +53,20 @@ impl Args {
             use crate::core::Wallet;
             let wallet = Wallet::new(seed_text, self.compressed);
             wallet.print(self.print.clone(), self.raw);
+        } else if let Some(hash) = &self.hash {
+            if let Ok(hash) = read_hash(hash) {
+                Wallet::from_hash(&hash, self.compressed).print(self.print.clone(), self.raw);
+            } else {
+                eprintln!("Invalid hash");
+            }
+        } else if let Some(path) = &self.file {
+            if Path::new(path).exists()
+                && let Ok(hash) = hash_from_file(path)
+            {
+                Wallet::from_hash(&hash, self.compressed).print(self.print.clone(), self.raw);
+            } else {
+                eprintln!("File not found");
+            }
         } else {
             let _ = Args::command().print_help();
         }
