@@ -1,6 +1,14 @@
 use anyhow::anyhow;
+use rand::Rng;
 use sha2::{Digest, Sha256};
 use std::{fs::File, io::Read};
+
+pub fn random_hash() -> [u8; 32] {
+    let mut data = [0u8; 32];
+    let mut rng = rand::rng();
+    rng.fill(&mut data[..]);
+    data
+}
 
 /// convert sha256 hash from string to unsign 8 bit array
 ///

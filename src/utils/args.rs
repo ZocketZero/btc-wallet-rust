@@ -1,6 +1,6 @@
 use crate::{
     core::Wallet,
-    utils::{PrintMode, hash_from_file, read_hash},
+    utils::{PrintMode, hash_from_file, random_hash, read_hash},
 };
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
@@ -16,6 +16,10 @@ pub struct Args {
     /// use file as seed
     #[arg(short, long, value_name = "File")]
     pub file: Option<String>,
+
+    ///Randomly generate a wallet
+    #[arg(long, default_value_t = false)]
+    pub random: bool,
 
     /// generate bitcoin from sha256 hash.
     #[arg(long, value_name = "Sha256")]
@@ -49,8 +53,10 @@ impl Args {
             {
                 generate(shell, &mut args, bin_name, &mut io::stdout());
             }
+        } else if self.random {
+            let hash = random_hash();
+            Wallet::from_hash(&hash, self.compressed).print(self.print.clone(), self.raw);
         } else if let Some(seed_text) = &self.seed_text {
-            use crate::core::Wallet;
             let wallet = Wallet::new(seed_text, self.compressed);
             wallet.print(self.print.clone(), self.raw);
         } else if let Some(hash) = &self.hash {
