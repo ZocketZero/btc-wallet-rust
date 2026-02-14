@@ -1,6 +1,7 @@
 # BTC Wallet
 
-A simple command-line Bitcoin wallet generator.
+> [!WARNING]
+> This project move to [crypto-wallet](https://crates.io/crates/crypto-wallet)
 
 ## Description
 
